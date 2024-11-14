@@ -4,7 +4,7 @@ const {
   Batch,
   Category_components,
   Components,
-  Product_components, Status_order
+  Product_components, Status_order, Stock_components
 } = require("../models/models");
 const {canTreatArrayAsAnd} = require("sequelize/lib/utils");
 
@@ -70,13 +70,13 @@ class AdminController {
   async getProductComponent(req, res) {
     try {
       const {vendor_code} = req.query
-      const whereClause = vendor_code ? {vendor_code}: {}
+      const whereClause = vendor_code ? {vendor_code} : {}
       let array = await Product_components.findAll({
         where: whereClause,
         attributes: ['productVendorCode', 'componentId', 'count'],
         include: [
-          { model: Product, attributes: ['name'] },
-          { model: Components, attributes: ['name'] }
+          {model: Product, attributes: ['name']},
+          {model: Components, attributes: ['name']}
         ]
       })
       return res.json(array)
@@ -85,13 +85,31 @@ class AdminController {
     }
   }
 
-  async createStatusOrder (req, res) {
+  async createStatusOrder(req, res) {
     try {
       const {name} = req.body
       const status = await Status_order.create({name})
       return res.json(status)
     } catch (e) {
       return res.status(500).json({error: e.message})
+    }
+  }
+
+  async createWick(req, res) {
+    try {
+      const {count} = req.query
+      //Id Ткани и Каркаса
+      let componentsIds = ['3ae833f5-43b3-48d0-b14d-9bcd68a19226', 'f2196520-61f1-402e-8a25-7868066b1dbc']
+      let components = await Stock_components.findAll({
+        where: {componentId: componentsIds}
+      })
+      for (let component of components) {
+        component.count -= count
+        await component.save()
+      }
+      return res.json(components)
+    } catch (e) {
+      return res.json({error: e.message})
     }
   }
 }

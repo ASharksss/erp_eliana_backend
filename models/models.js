@@ -25,22 +25,22 @@ const Category_components = sequelize.define('category_components', {
 
 const Product_components = sequelize.define('product_components', {
   id: {type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true},
-  count: {type: DataTypes.DOUBLE, allowNull: false},
+  count: {type: DataTypes.DECIMAL, allowNull: false},
 })
 
 const Stock = sequelize.define('stock', {
   id: {type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true},
-  count: {type: DataTypes.DOUBLE, allowNull: false},
+  count: {type: DataTypes.DECIMAL, allowNull: false},
 })
 
 const Stock_components = sequelize.define('stock_components', {
   id: {type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true},
-  count: {type: DataTypes.DOUBLE, allowNull: false},
+  count: {type: DataTypes.DECIMAL, allowNull: false},
 })
 
 const Shipment = sequelize.define('shipment', {
   id: {type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true},
-  count: {type: DataTypes.DOUBLE, allowNull: false},
+  count: {type: DataTypes.DECIMAL, allowNull: false},
 })
 
 const Order = sequelize.define('order', {
