@@ -95,17 +95,20 @@ class AdminController {
     }
   }
 
-  //Добавить проверку на количество на складе
   async createWick(req, res) {
     try {
       const {count} = req.body
-      //id Ткани и Каркаса
+      //id фитиля
       let wickId = "6baa4331-0e46-4e84-b7c6-d5892f2c2a04"
+      //id ткани и каркаса
       let componentsIds = ['3ae833f5-43b3-48d0-b14d-9bcd68a19226', 'f2196520-61f1-402e-8a25-7868066b1dbc']
       let components = await Stock_components.findAll({
         where: {componentId: componentsIds}
       })
       for (let component of components) {
+        if (Number(component.count) < count) {
+          return res.json({message: "Не хватает материала на складе"})
+        }
         component.count = Number(component.count) - Number(count)
         await component.save()
 
@@ -122,6 +125,15 @@ class AdminController {
         count
       })
       return res.json(components)
+    } catch (e) {
+      return res.json({error: e.message})
+    }
+  }
+
+  async createSolution(req, res) {
+    try {
+      const {chemistry, perfumes, count, productVendorCode} = req.body
+
     } catch (e) {
       return res.json({error: e.message})
     }
