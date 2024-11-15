@@ -18,7 +18,7 @@ app.use('/api', router)
 const start = async () => {
   try {
     await sequelize.authenticate()
-    await sequelize.sync({alter: true})
+    await sequelize.sync()
     app.listen(PORT, () => {
       console.log(`Сервер стартовал на порту ${PORT}`)
     })

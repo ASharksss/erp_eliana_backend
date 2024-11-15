@@ -4,7 +4,7 @@ const {
   Batch,
   Category_components,
   Components,
-  Product_components, Status_order, Stock_components
+  Product_components, Status_order, Stock_components, Transaction, Supply
 } = require("../models/models");
 const {canTreatArrayAsAnd} = require("sequelize/lib/utils");
 
@@ -95,18 +95,32 @@ class AdminController {
     }
   }
 
+  //Добавить проверку на количество на складе
   async createWick(req, res) {
     try {
-      const {count} = req.query
-      //Id Ткани и Каркаса
+      const {count} = req.body
+      //id Ткани и Каркаса
+      let wickId = "6baa4331-0e46-4e84-b7c6-d5892f2c2a04"
       let componentsIds = ['3ae833f5-43b3-48d0-b14d-9bcd68a19226', 'f2196520-61f1-402e-8a25-7868066b1dbc']
       let components = await Stock_components.findAll({
         where: {componentId: componentsIds}
       })
       for (let component of components) {
-        component.count -= count
+        component.count = Number(component.count) - Number(count)
         await component.save()
+
+        await Transaction.create({
+          type: "Расход",
+          count,
+          componentId: component.componentId,
+          direction: "Расход на создание фитиля"
+        })
       }
+      await Supply.create({
+        componentId: wickId,
+        date: new Date(),
+        count
+      })
       return res.json(components)
     } catch (e) {
       return res.json({error: e.message})
