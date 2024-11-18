@@ -4,7 +4,7 @@ const {
   Batch,
   Category_components,
   Components,
-  Product_components, Status_order, Stock_components, Transaction, Supply, Stock, Shipment
+  Product_components, Status_order, Stock_components, Transaction, Supply, Stock, Shipment, Order_list
 } = require("../models/models");
 const {canTreatArrayAsAnd} = require("sequelize/lib/utils");
 
@@ -198,9 +198,21 @@ class AdminController {
     }
   }
 
-  async getShipment(req, res) {
-    const shipments = await Shipment.findAll()
-    return res.json(shipments)
+  async addMinValue(req, res) {
+    try {
+      const {id, count} = req.body
+      const edit_row = await Stock_components.findOne({
+        where: {id}
+      })
+      if (!edit_row) {
+        return res.json("Строка не найдена")
+      }
+      edit_row.min_value = count
+      await edit_row.save()
+      return res.json(edit_row)
+    } catch (e) {
+      return res.json({error: e.message})
+    }
   }
 
 }

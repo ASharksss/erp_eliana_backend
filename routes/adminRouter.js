@@ -10,9 +10,10 @@ router.post('/createProductComponent', adminController.createProductComponent)
 router.post('/createStatusOrder', adminController.createStatusOrder)
 router.post('/createWick', adminController.createWick)
 router.post('/createSolution', adminController.createSolution)
+router.post('/addMinValue', adminController.addMinValue)
 
 router.get('/getProductComponent', adminController.getProductComponent)
-router.get('/getShipment', adminController.getShipment)
+
 
 
 module.exports = router

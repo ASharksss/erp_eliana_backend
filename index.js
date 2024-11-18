@@ -14,7 +14,6 @@ app.use(express.json())
 app.use(fileUpload())
 app.use('/api', router)
 
-
 const start = async () => {
   try {
     await sequelize.authenticate()
