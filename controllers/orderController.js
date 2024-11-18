@@ -112,6 +112,20 @@ class OrderController {
     }
   }
 
+  async editOrder(req, res) {
+    try {
+      const {orderListId, count} = req.body
+      const edit_row = await Order_list.findOne({
+        where: {id: orderListId}
+      })
+      edit_row.count = count
+      await edit_row.save()
+      return res.json(edit_row)
+    } catch (e) {
+      return res.status(500).json({error: e.message})
+    }
+  }
+
   async prepareOrder(req, res) {
     try {
       const {id} = req.params
