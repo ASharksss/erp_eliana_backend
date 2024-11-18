@@ -86,6 +86,7 @@ class ProductController {
     }
   }
 
+  //Тут дата не ставится
   async createSupplyArray(req, res) {
     try {
       const array = req.body

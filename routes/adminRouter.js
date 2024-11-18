@@ -9,6 +9,7 @@ router.post('/createComponent', adminController.createComponent)
 router.post('/createProductComponent', adminController.createProductComponent)
 router.post('/createStatusOrder', adminController.createStatusOrder)
 router.post('/createWick', adminController.createWick)
+router.post('/createSolution', adminController.createSolution)
 
 router.get('/getProductComponent', adminController.getProductComponent)
 

@@ -4,7 +4,7 @@ const {
   Batch,
   Category_components,
   Components,
-  Product_components, Status_order, Stock_components, Transaction, Supply
+  Product_components, Status_order, Stock_components, Transaction, Supply, Stock
 } = require("../models/models");
 const {canTreatArrayAsAnd} = require("sequelize/lib/utils");
 
@@ -133,7 +133,7 @@ class AdminController {
 
       if (wick) {
         wick.count = Number(wick.count) + Number(count)
-        wick.save()
+        await wick.save()
       }
 
       await Transaction.create({
@@ -150,8 +150,49 @@ class AdminController {
 
   async createSolution(req, res) {
     try {
-      const {chemistry, perfumes, count, productVendorCode} = req.body
+      const {chemistry, perfumes} = req.body
+      //id ПЭГ и ПГ
+      let chemistryIds = ['31847e05-edef-4c9f-bda9-7d4e01ecb8fb', 'e1b146e5-0908-4c30-9ea8-d041c5de50d8']
 
+      for (let item of chemistryIds) {
+
+        let chem = await Stock_components.findOne({
+          where: {componentId: item}
+        })
+
+        if (!chem) {
+          return res.json("На складе нет ПЭГ, ПГ")
+        }
+
+        chem.count = Number(chem.count) - Number(chemistry)
+        await chem.save()
+
+        await Transaction.create({
+          type: "Расход",
+          count: chemistry,
+          direction: "Расход на создание ароматизатора",
+          componentId: item
+        })
+      }
+
+      for (let perfume of perfumes) {
+        let model = await Stock_components.findOne({
+          where: {componentId: perfume.id}
+        })
+        if (!model) {
+          return res.json("Отдушка не найдена")
+        }
+        model.count = Number(model.count) - Number(perfume.count)
+        await model.save()
+
+        await Transaction.create({
+          type: "Расход",
+          count: perfume.count,
+          direction: "Расход на создание ароматизатора",
+          componentId: perfume.id
+        })
+      }
+      return res.json("Все")
     } catch (e) {
       return res.json({error: e.message})
     }
