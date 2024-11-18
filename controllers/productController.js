@@ -4,8 +4,12 @@ const {
   Batch,
   Product_components,
   Components, Transaction,
-  Batch_components, Supply, Stock_components, Stock
+  Batch_components, Supply, Stock_components, Stock, Order, Order_list, Shipment
 } = require("../models/models");
+const path = require("path");
+const xlsx = require("xlsx");
+const fs = require("fs");
+const utils = require("../utils");
 
 
 class ProductController {
@@ -52,7 +56,7 @@ class ProductController {
         })
 
         if (component.count < requiredCount) {
-          return res.json({ message: `Недостаточно компонента с ID ${item.componentId} на складе.` });
+          return res.json({message: `Недостаточно компонента с ID ${item.componentId} на складе.`});
         }
         if (component) {
           // Вычитаем компоненты
@@ -77,7 +81,7 @@ class ProductController {
       if (product) {
         product.count += count
         await product.save()
-      }else {
+      } else {
         await Stock.create({productVendorCode, count})
       }
       return res.json(expenses)
@@ -116,6 +120,52 @@ class ProductController {
     }
   }
 
+  async createMarketplaceShipment(req, res) {
+    try {
+      const {customer} = req.body
+      if (!req.files || !req.files.file) {
+        return res.status(400).json("Файл не загружен")
+      }
+      const file = req.files.file
+      let order_list = await utils.CheckExcel(file)
+      let order = await Order.create({
+        customer,
+        type: "Маркетплейс",
+        statusOrderId: "9d8a0b8e-a31d-4f6d-a952-e8c25f881ff1"
+      })
+      for (let item of order_list) {
+        await Order_list.create({
+          orderId: order.id,
+          productVendorCode: item.article,
+          count: item.quantity
+        })
+        let product = await Stock.findOne({
+          where: {productVendorCode: item.article}
+        })
+        if (!product) {
+          return res.json("Продукт на складе не найден")
+        }
+        product.count = Number(product.count) - Number(item.quantity)
+        await product.save()
+
+        await Shipment.create({
+          productVendorCode: item.article,
+          orderId: order.id,
+          count: item.quantity
+        })
+        await Transaction.create({
+          type: "Расход",
+          productVendorCode: item.article,
+          count: item.quantity,
+          direction: `Отправка на маркетплейс ${customer}`
+        })
+      }
+
+      return res.json(order_list)
+    } catch (e) {
+      return res.json({error: e.message})
+    }
+  }
 
 }
 

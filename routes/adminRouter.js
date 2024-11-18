@@ -12,6 +12,7 @@ router.post('/createWick', adminController.createWick)
 router.post('/createSolution', adminController.createSolution)
 
 router.get('/getProductComponent', adminController.getProductComponent)
+router.get('/getShipment', adminController.getShipment)
 
 
 module.exports = router

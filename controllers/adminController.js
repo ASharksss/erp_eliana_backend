@@ -4,7 +4,7 @@ const {
   Batch,
   Category_components,
   Components,
-  Product_components, Status_order, Stock_components, Transaction, Supply, Stock
+  Product_components, Status_order, Stock_components, Transaction, Supply, Stock, Shipment
 } = require("../models/models");
 const {canTreatArrayAsAnd} = require("sequelize/lib/utils");
 
@@ -197,6 +197,12 @@ class AdminController {
       return res.json({error: e.message})
     }
   }
+
+  async getShipment(req, res) {
+    const shipments = await Shipment.findAll()
+    return res.json(shipments)
+  }
+
 }
 
 module.exports = new AdminController()

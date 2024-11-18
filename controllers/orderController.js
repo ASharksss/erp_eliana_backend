@@ -59,7 +59,8 @@ class OrderController {
       const {arr, customer} = req.body
       let order = await Order.create({
         customer,
-        statusOrderId: "07d2152f-29ff-4e2a-9ae7-02d3e2bd807a"
+        statusOrderId: "07d2152f-29ff-4e2a-9ae7-02d3e2bd807a",
+        type: "Опт"
       })
       for (let item of arr) {
         await Order_list.create({

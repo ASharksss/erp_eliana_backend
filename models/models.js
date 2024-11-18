@@ -46,6 +46,7 @@ const Shipment = sequelize.define('shipment', {
 const Order = sequelize.define('order', {
   id: {type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true},
   customer: {type: DataTypes.TEXT, allowNull: false},
+  type: {type: DataTypes.STRING}
 })
 
 const Order_list = sequelize.define('order_list', {
