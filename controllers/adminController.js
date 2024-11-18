@@ -105,10 +105,12 @@ class AdminController {
       let components = await Stock_components.findAll({
         where: {componentId: componentsIds}
       })
+
       for (let component of components) {
         if (Number(component.count) < count) {
           return res.json({message: "Не хватает материала на складе"})
         }
+
         component.count = Number(component.count) - Number(count)
         await component.save()
 
@@ -123,6 +125,22 @@ class AdminController {
         componentId: wickId,
         date: new Date(),
         count
+      })
+
+      let wick = await Stock_components.findOne({
+        where: {componentId: wickId}
+      })
+
+      if (wick) {
+        wick.count = Number(wick.count) + Number(count)
+        wick.save()
+      }
+
+      await Transaction.create({
+        type: "Приход",
+        count,
+        componentId: wickId,
+        direction: "Добавление фитиля"
       })
       return res.json(components)
     } catch (e) {
