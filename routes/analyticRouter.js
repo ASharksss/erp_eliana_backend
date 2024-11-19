@@ -7,5 +7,7 @@ router.get('/listLowComponents', analyticController.listLowComponents)
 router.get('/listOrders', analyticController.listOrders)
 router.get('/productionIndicators', analyticController.productionIndicators)
 router.get('/shipmentReport', analyticController.shipmentReport)
+router.get('/showTransaction', analyticController.showTransaction)
+router.get('/showBatches', analyticController.showBatches)
 
 module.exports = router

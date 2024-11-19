@@ -36,7 +36,7 @@ const Stock = sequelize.define('stock', {
 const Stock_components = sequelize.define('stock_components', {
   id: {type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true},
   count: {type: DataTypes.DECIMAL, allowNull: false},
-  min_value: {type: DataTypes.DECIMAL, allowNull: false}
+  min_value: {type: DataTypes.DECIMAL, allowNull: false, defaultValue: 100}
 })
 
 const Shipment = sequelize.define('shipment', {

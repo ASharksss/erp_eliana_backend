@@ -5,7 +5,7 @@ const {
   Components,
   Stock_components,
   Order,
-  Status_order, Batch, Shipment
+  Status_order, Batch, Shipment, Transaction, Batch_components
 } = require("../models/models");
 const xlsx = require("xlsx");
 const utils = require("../utils")
@@ -104,6 +104,45 @@ class AnalyticController {
       return res.status(500).json({error: e.message})
     }
   }
+
+  async showTransaction(req, res) {
+    try {
+      const transactions = await Transaction.findAll({
+        attributes: ['type', 'count', 'direction', 'createdAt'],
+        include: [
+          {model: Product, attributes: ['vendor_code', 'name']},
+          {model: Components, attributes: ['name', 'unit']}]
+      })
+      return res.json(transactions)
+    } catch (e) {
+      return res.status(500).json({error: e.message})
+    }
+  }
+
+  async showBatches(req, res) {
+    try {
+      const batches = await Batch.findAll({
+        attributes: ['count', 'createdAt'],
+        include: [
+          {
+            model: Product,
+            attributes: ['vendor_code', 'name']
+          },
+          {
+            model: Batch_components,
+            attributes: ['componentId', 'count'],
+            include: [
+              {model: Components, attributes: ['name',]}
+            ]
+          }
+        ],
+      })
+      return res.json(batches)
+    } catch (e) {
+      return res.status(500).json({error: e.message})
+    }
+  }
+
 
 }
 

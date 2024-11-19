@@ -37,7 +37,8 @@ class ProductController {
       //Находим растраты на 1 товар
       const expenses = await Product_components.findAll({
         where: {productVendorCode},
-        attributes: ['productVendorCode', 'componentId', 'count']
+        attributes: ['productVendorCode', 'componentId', 'count'],
+        include: [{model: Product}]
       })
       //Перебираем
       for (let item of expenses) {
@@ -67,7 +68,7 @@ class ProductController {
             type: "Расход",
             componentId: item.componentId,
             count: requiredCount,
-            direction: "Расход на товар"
+            direction: `Расход на товар ${item.product.name}`
           })
 
         } else {
@@ -96,10 +97,11 @@ class ProductController {
       const array = req.body
       for (let item of array) {
         const component = await Stock_components.findOne({
-          where: {componentId: item.componentId}
+          where: {componentId: item.componentId},
+          include: [{model: Components}]
         })
         if (component) {
-          component.count += item.count
+          component.count = Number(component.count) + Number(item.count)
           await component.save()
         } else {
           await Stock_components.create({
@@ -111,6 +113,12 @@ class ProductController {
           componentId: item.componentId,
           count: item.count,
           data: item.date
+        })
+        await Transaction.create({
+          type: "Приход",
+          count: item.count,
+          direction: `Добавление на склад ${component.component.name}`,
+          componentId: item.componentId
         })
 
       }
