@@ -1,6 +1,7 @@
 const path = require("path");
 const xlsx = require("xlsx");
 const fs = require("fs");
+const {Stock_components, Components, Min_values} = require("./models/models");
 
 class Utils {
   async CheckExcel(file) {
@@ -18,7 +19,7 @@ class Utils {
     // Если столбцы не найдены
     if (articleColumnIndex === -1) {
       fs.unlinkSync(filePath);
-       throw 'Столбец "Артикул" не найден.';
+      throw 'Столбец "Артикул" не найден.';
     }
     if (quantityColumnIndex === -1) {
       fs.unlinkSync(filePath);
@@ -36,6 +37,33 @@ class Utils {
     fs.unlinkSync(filePath)
     return result
   }
+
+  async CheckStockLevels() {
+    try {
+      const stock = await Stock_components.findAll({
+        include: [{model: Components}]
+      })
+      const lowStockItems = stock.filter(item => item.count <= item.min_value)
+      if (lowStockItems.length > 0) {
+        console.log('Заканчивающиеся позиции:');
+        await Min_values.truncate();
+        const promises = lowStockItems.map(async (item) => {
+          console.log(`Позиция: ${item.component.name}, Остаток: ${item.count}, Минимальное количество: ${item.min_value}`);
+          await Min_values.create({
+            stockComponentId: item.id
+          });
+        });
+
+        // Ожидаем выполнения всех промисов, прежде чем продолжить
+        await Promise.all(promises);
+      } else {
+        console.log('Все позиции в норме.');
+      }
+    } catch (e) {
+      return console.log(e.message)
+    }
+  }
+
 }
 
 module.exports = new Utils()

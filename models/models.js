@@ -76,12 +76,19 @@ const Supply = sequelize.define('supply', {
   date: {type: DataTypes.DATE}
 })
 
+const Min_values = sequelize.define('min_values', {
+  id: {type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true}
+})
+
 const Transaction = sequelize.define('Transaction', {
   id: {type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true},
   type: {type: DataTypes.STRING, allowNull: false},
   count: {type: DataTypes.INTEGER, allowNull: false},
   direction: {type: DataTypes.STRING, allowNull: false}
 })
+
+Stock_components.hasMany(Min_values)
+Min_values.belongsTo(Stock_components)
 
 Category_product.hasMany(Product)
 Product.belongsTo(Category_product)
@@ -146,6 +153,6 @@ module.exports = {
   Order,
   Shipment,
   Stock,
-  Product_components, Stock_components, Status_order,
+  Product_components, Stock_components, Status_order, Min_values,
   Category_components, Components, Category_product, Product
 }
