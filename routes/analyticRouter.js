@@ -9,5 +9,6 @@ router.get('/productionIndicators', analyticController.productionIndicators)
 router.get('/shipmentReport', analyticController.shipmentReport)
 router.get('/showTransaction', analyticController.showTransaction)
 router.get('/showBatches', analyticController.showBatches)
+router.get('/getMinValues', analyticController.getMinValues)
 
 module.exports = router

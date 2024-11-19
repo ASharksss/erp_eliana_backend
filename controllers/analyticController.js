@@ -143,6 +143,18 @@ class AnalyticController {
     }
   }
 
+  async getMinValues(req, res) {
+    try {
+      const min_values = await Stock_components.findAll({
+        attributes: ['count', 'min_value'],
+        include: [{model: Components, attributes: ['name', 'unit']}]
+      })
+      return res.json(min_values)
+    } catch (e) {
+      return res.status(500).json({error: e.message})
+    }
+  }
+
 
 }
 
