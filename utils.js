@@ -64,6 +64,21 @@ class Utils {
     }
   }
 
+  async createExcel(arr) {
+    // Преобразуем массив данных в формат, который понимает xlsx
+    const ws = xlsx.utils.json_to_sheet(arr);  // Преобразуем JSON в рабочий лист
+
+    // Создаем книгу
+    const wb = xlsx.utils.book_new();
+    xlsx.utils.book_append_sheet(wb, ws, 'Sheet1');  // Добавляем рабочий лист в книгу
+
+    // Создаем Excel файл в формате Buffer
+    const fileBuffer = xlsx.write(wb, {bookType: 'xlsx', type: 'buffer'});
+
+    // Отправляем файл пользователю
+    return (fileBuffer);
+  }
+
 }
 
 module.exports = new Utils()
