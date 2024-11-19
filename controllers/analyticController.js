@@ -5,7 +5,7 @@ const {
   Components,
   Stock_components,
   Order,
-  Status_order
+  Status_order, Batch, Shipment
 } = require("../models/models");
 const xlsx = require("xlsx");
 const utils = require("../utils")
@@ -70,6 +70,43 @@ class AnalyticController {
       return res.status(500).json({error: e.message})
     }
   }
+
+  async productionIndicators(req, res) {
+    try {
+      const batches = await Batch.findAll({
+        attributes: ['count', 'productVendorCode', 'createdAt'],
+        raw: true
+      })
+      utils.createExcel(batches).then(data => {
+        res.setHeader('Content-Disposition', 'attachment; filename=productionIndicators.xlsx');
+        return res.send(data)
+      })
+    } catch (e) {
+      return res.status(500).json({error: e.message})
+    }
+  }
+
+  async shipmentReport(req, res) {
+    try {
+      const shipments = await Shipment.findAll({
+        include: [{
+          model: Order,
+          attributes: ['customer', 'type']
+        }],
+        attributes: ['count', 'productVendorCode', 'createdAt'],
+        raw: true
+      })
+      utils.createExcel(shipments).then(data => {
+        res.setHeader('Content-Disposition', 'attachment; filename=productionIndicators.xlsx');
+        return res.send(data)
+      })
+
+    } catch (e) {
+      return res.status(500).json({error: e.message})
+    }
+
+  }
+
 }
 
 module.exports = new AnalyticController()
