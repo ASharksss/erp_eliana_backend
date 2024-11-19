@@ -100,11 +100,9 @@ class AnalyticController {
         res.setHeader('Content-Disposition', 'attachment; filename=productionIndicators.xlsx');
         return res.send(data)
       })
-
     } catch (e) {
       return res.status(500).json({error: e.message})
     }
-
   }
 
 }

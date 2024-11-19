@@ -11,12 +11,25 @@ const {canTreatArrayAsAnd} = require("sequelize/lib/utils");
 class AdminController {
   async createProduct(req, res) {
     try {
-      const {vendor_code, name, description, categoryProductId} = req.body
-      const product =
-        await Product.create({vendor_code, name, description, categoryProductId})
-      return res.json(product)
+      const {arr} = req.body;
+
+      // Создаем все продукты параллельно с помощью Promise.all
+      const products = arr.map(item =>
+        Product.create({
+          vendor_code: item.vendor_code,
+          name: item.name,
+          description: item.description,
+          categoryProductId: item.categoryProductId
+        })
+      );
+
+      // Ожидаем, пока все продукты будут созданы
+      await Promise.all(products);
+
+      return res.json("Добавлено");
     } catch (e) {
-      return res.json({error: e.message})
+      console.error(e);  // Логируем ошибку для диагностики
+      return res.status(500).json({error: e.message});
     }
   }
 
