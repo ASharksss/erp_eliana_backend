@@ -1,4 +1,12 @@
-const {Product, Category_product, Min_values, Components, Stock_components} = require("../models/models");
+const {
+  Product,
+  Category_product,
+  Min_values,
+  Components,
+  Stock_components,
+  Order,
+  Status_order
+} = require("../models/models");
 const xlsx = require("xlsx");
 const utils = require("../utils")
 
@@ -40,6 +48,22 @@ class AnalyticController {
       })
       utils.createExcel(components).then(data => {
         res.setHeader('Content-Disposition', 'attachment; filename=listLowComponents.xlsx');
+        return res.send(data)
+      })
+    } catch (e) {
+      return res.status(500).json({error: e.message})
+    }
+  }
+
+  async listOrders(req, res) {
+    try {
+      const orders = await Order.findAll({
+        include: [{model: Status_order, attributes: ['name']}],
+        attributes: ['customer', 'type', 'createdAt'],
+        raw: true
+      })
+      utils.createExcel(orders).then(data => {
+        res.setHeader('Content-Disposition', 'attachment; filename=listOrders.xlsx');
         return res.send(data)
       })
     } catch (e) {
